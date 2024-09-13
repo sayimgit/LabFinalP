@@ -1,15 +1,10 @@
 public class Gastrology extends Doctor {
     public Gastrology(int doctorID, String name) {
-        super(doctorID, name);
-    }
-
-    @Override
-    public String getSpecialization() {
-        return "Gastrology";
+        super(doctorID, name, "Gastrologist");
     }
 
     @Override
     public void displayAvailability() {
-        System.out.println("Gastrology doctor availability displayed.");
+        System.out.println("Gastrology availability details...");
     }
 }

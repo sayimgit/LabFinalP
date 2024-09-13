@@ -1,4 +1,3 @@
-1,Dr. Smith,ENT
-2,Dr. Johnson,Gastrology
-3,Dr. Lee,Medicine
-123,Dr. Smith,Medicine
+1,Asif,ENT Specialist
+2,Abrar,Gastrologist
+3,Sayim,General Medicine

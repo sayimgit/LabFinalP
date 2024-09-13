@@ -5,155 +5,132 @@ import java.util.List;
 
 public class FileHandler {
 
-    // Save the list of doctors to a file
-    public static void saveDoctors(List<Doctor> doctors) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("doctors.txt"))) {
-            for (Doctor doctor : doctors) {
-                writer.write(doctor.getDoctorID() + "," + doctor.getName() + "," + doctor.getSpecialization() + "\n");
-            }
-        } catch (IOException e) {
-            System.out.println("Error saving doctors: " + e.getMessage());
-        }
-    }
+    private static final String DOCTORS_FILE = "doctors.txt";
+    private static final String PATIENTS_FILE = "patients.txt";
+    private static final String APPOINTMENTS_FILE = "appointments.txt";
 
-    // Load the list of doctors from a file
+    // Load doctors from the file
     public static List<Doctor> loadDoctors() {
         List<Doctor> doctors = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("doctors.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(DOCTORS_FILE))) {
             String line;
-            while ((line = reader.readLine()) != null) {
-                String[] tokens = line.split(",");
-                if (tokens.length != 3) {
-                    System.out.println("Invalid doctor data: " + line);
-                    continue;
-                }
-                int doctorID = Integer.parseInt(tokens[0]);
-                String name = tokens[1];
-                String specialization = tokens[2];
-
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                int doctorID = Integer.parseInt(parts[0]);
+                String name = parts[1];
+                String specialization = parts[2];
                 Doctor doctor;
-                // Create the appropriate type of doctor based on specialization
-                switch (specialization.toLowerCase()) {
-                    case "ent":
+                switch (specialization) {
+                    case "ENT Specialist":
                         doctor = new ENT(doctorID, name);
                         break;
-                    case "gastrology":
+                    case "Gastrologist":
                         doctor = new Gastrology(doctorID, name);
                         break;
-                    case "medicine":
+                    case "General Medicine":
                         doctor = new Medicine(doctorID, name);
                         break;
                     default:
-                        continue;  // Skip unknown specializations
+                        throw new IllegalArgumentException("Unknown specialization: " + specialization);
                 }
                 doctors.add(doctor);
             }
         } catch (IOException e) {
-            System.out.println("Error loading doctors: " + e.getMessage());
+            e.printStackTrace();
         }
         return doctors;
     }
 
-    // Save the list of patients to a file
-    public static void savePatients(List<Patient> patients) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("patients.txt"))) {
-            for (Patient patient : patients) {
-                writer.write(patient.getPatientID() + "," + patient.getName() + "," + patient.getAge() + "," + patient.getPhoneNumber() + "\n");
+    // Save doctors to the file
+    public static void saveDoctors(List<Doctor> doctors) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(DOCTORS_FILE))) {
+            for (Doctor doctor : doctors) {
+                bw.write(doctor.getDoctorID() + "," + doctor.getName() + "," + doctor.getSpecialization());
+                bw.newLine();
             }
         } catch (IOException e) {
-            System.out.println("Error saving patients: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    // Load the list of patients from a file
+    // Load patients from the file
     public static List<Patient> loadPatients() {
         List<Patient> patients = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("patients.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(PATIENTS_FILE))) {
             String line;
-            while ((line = reader.readLine()) != null) {
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
-
-                String[] tokens = line.split(",");
-                if (tokens.length != 4) {
-                    System.out.println("Invalid patient data: " + line);
-                    continue;
-                }
-
-                int patientID = Integer.parseInt(tokens[0]);
-                String name = tokens[1];
-                int age = Integer.parseInt(tokens[2]);
-                String phoneNumber = tokens[3];
-
-                Patient patient = new Patient(patientID, name, age, phoneNumber);
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                int patientID = Integer.parseInt(parts[0]);
+                String name = parts[1];
+                int age = Integer.parseInt(parts[2]);
+                String phone = parts[3];
+                Patient patient = new Patient(patientID, name, age, phone);
                 patients.add(patient);
             }
         } catch (IOException e) {
-            System.out.println("Error loading patients: " + e.getMessage());
+            e.printStackTrace();
         }
         return patients;
     }
 
-    // Save the list of appointments to a file
-    public static void saveAppointments(List<Appointment> appointments) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("appointments.txt"))) {
-            for (Appointment appointment : appointments) {
-                writer.write(appointment.getAppointmentID() + "," + appointment.getDoctor().getDoctorID() + "," + appointment.getPatient().getPatientID() + "," + appointment.getAppointmentDate().toString() + "\n");
+    // Save patients to the file
+    public static void savePatients(List<Patient> patients) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(PATIENTS_FILE))) {
+            for (Patient patient : patients) {
+                bw.write(patient.getPatientID() + "," + patient.getName() + "," + patient.getAge() + "," + patient.getPhone());
+                bw.newLine();
             }
         } catch (IOException e) {
-            System.out.println("Error saving appointments: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    // Load the list of appointments from a file
+    // Load appointments from the file
     public static List<Appointment> loadAppointments(List<Doctor> doctors, List<Patient> patients) {
         List<Appointment> appointments = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("appointments.txt"))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(APPOINTMENTS_FILE))) {
             String line;
-            while ((line = reader.readLine()) != null) {
-                String[] tokens = line.split(",");
-                if (tokens.length != 4) {
-                    System.out.println("Invalid appointment data: " + line);
-                    continue;
-                }
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+                int appointmentID = Integer.parseInt(parts[0]);
+                int doctorID = Integer.parseInt(parts[1]);
+                int patientID = Integer.parseInt(parts[2]);
+                LocalDate date = LocalDate.parse(parts[3]);
+                boolean served = Boolean.parseBoolean(parts[4]);
 
-                int appointmentID = Integer.parseInt(tokens[0]);
-                int doctorID = Integer.parseInt(tokens[1]);
-                int patientID = Integer.parseInt(tokens[2]);
-                LocalDate appointmentDate = LocalDate.parse(tokens[3]);
-
-                Doctor doctor = findDoctorByID(doctors, doctorID);
-                Patient patient = findPatientByID(patients, patientID);
+                Doctor doctor = doctors.stream()
+                        .filter(d -> d.getDoctorID() == doctorID)
+                        .findFirst()
+                        .orElse(null);
+                Patient patient = patients.stream()
+                        .filter(p -> p.getPatientID() == patientID)
+                        .findFirst()
+                        .orElse(null);
 
                 if (doctor != null && patient != null) {
-                    Appointment appointment = new Appointment(appointmentID, doctor, patient, appointmentDate);
+                    Appointment appointment = new Appointment(appointmentID, doctor, patient, date, served);
                     appointments.add(appointment);
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error loading appointments: " + e.getMessage());
+            e.printStackTrace();
         }
         return appointments;
     }
 
-    // Helper method to find a doctor by ID
-    private static Doctor findDoctorByID(List<Doctor> doctors, int doctorID) {
-        for (Doctor doctor : doctors) {
-            if (doctor.getDoctorID() == doctorID) {
-                return doctor;
+    // Save appointments to the file
+    public static void saveAppointments(List<Appointment> appointments) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(APPOINTMENTS_FILE))) {
+            for (Appointment appointment : appointments) {
+                bw.write(appointment.getAppointmentID() + "," +
+                         appointment.getDoctor().getDoctorID() + "," +
+                         appointment.getPatient().getPatientID() + "," +
+                         appointment.getDate() + "," +
+                         appointment.isServed());
+                bw.newLine();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
-    }
-
-    // Helper method to find a patient by ID
-    private static Patient findPatientByID(List<Patient> patients, int patientID) {
-        for (Patient patient : patients) {
-            if (patient.getPatientID() == patientID) {
-                return patient;
-            }
-        }
-        return null;
     }
 }

@@ -1,34 +1,54 @@
-public class Patient {
+import java.io.Serializable;
+
+public class Patient implements Serializable {
     private int patientID;
     private String name;
     private int age;
-    private String phoneNumber;
+    private String phone;
 
-    public Patient(int patientID, String name, int age, String phoneNumber) {
+    public Patient(int patientID, String name, int age, String phone) {
         this.patientID = patientID;
         this.name = name;
         this.age = age;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
     }
 
     public int getPatientID() {
         return patientID;
     }
 
+    public void setPatientID(int patientID) {
+        this.patientID = patientID;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getAge() {
         return age;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public void setAge(int age) {
+        this.age = age;
     }
 
-    @Override
-    public String toString() {
-        return "Patient ID: " + patientID + ", Name: " + name + ", Age: " + age + ", Phone Number: " + phoneNumber;
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void printPatientDetails() {
+        System.out.println("Patient ID: " + patientID +
+                           ", Name: " + name +
+                           ", Age: " + age +
+                           ", Phone: " + phone);
     }
 }
